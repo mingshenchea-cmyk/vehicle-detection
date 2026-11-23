@@ -111,14 +111,14 @@ Validation overall with the same thresholds: mAP50 **0.717**, mAP50-95 **0.656**
 ### Before / after NMS tuning
 
 Duplicate and low-confidence boxes cleaned up by tuning to `conf=0.25`, `iou=0.5`
-(each strip: original · ground truth · prediction):
+(prediction panel shown — click any image for the full original · ground truth · prediction strip):
 
 | Condition | Before | After |
 |---|---|---|
-| ☀️ Clear | ![Clear before](assets/nms/clear-before.jpg) | ![Clear after](assets/nms/clear-after.jpg) |
-| 🌫️ Fog | ![Fog before](assets/nms/fog-before.jpg) | ![Fog after](assets/nms/fog-after.jpg) |
-| 🌙 Night | ![Night before](assets/nms/night-before.jpg) | ![Night after](assets/nms/night-after.jpg) |
-| 🌧️ Rain | ![Rain before](assets/nms/rain-before.jpg) | ![Rain after](assets/nms/rain-after.jpg) |
+| ☀️ Clear | [![Clear before](assets/nms/clear-before-pred.jpg)](assets/nms/clear-before.jpg) | [![Clear after](assets/nms/clear-after-pred.jpg)](assets/nms/clear-after.jpg) |
+| 🌫️ Fog | [![Fog before](assets/nms/fog-before-pred.jpg)](assets/nms/fog-before.jpg) | [![Fog after](assets/nms/fog-after-pred.jpg)](assets/nms/fog-after.jpg) |
+| 🌙 Night | [![Night before](assets/nms/night-before-pred.jpg)](assets/nms/night-before.jpg) | [![Night after](assets/nms/night-after-pred.jpg)](assets/nms/night-after.jpg) |
+| 🌧️ Rain | [![Rain before](assets/nms/rain-before-pred.jpg)](assets/nms/rain-before.jpg) | [![Rain after](assets/nms/rain-after-pred.jpg)](assets/nms/rain-after.jpg) |
 
 ## 📁 Project Structure
 
