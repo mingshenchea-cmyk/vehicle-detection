@@ -71,6 +71,17 @@ Images are grouped by weather: `clear`, `fog`, `night`, `rain`, `sand`, `snow`.
 The balanced training split uses **clear / fog / night / rain**; sand and snow remain
 in the merged dataset but are not sampled into the split.
 
+Sample scenes from the dataset:
+
+| | | | |
+|---|---|---|---|
+| ![Fog](assets/samples/fog.jpg) | ![Night](assets/samples/night.jpg) | ![Rain](assets/samples/rain.jpg) | ![Snow storm](assets/samples/snowstorm.jpg) |
+| Fog | Night | Rain | Snow storm |
+| ![Dust](assets/samples/dust.jpg) | ![Haze](assets/samples/haze.webp) | ![Mist](assets/samples/mist.webp) | ![Sand storm](assets/samples/sandstorm.jpg) |
+| Dust | Haze | Mist | Sand storm |
+
+*(Haze and mist are grouped under `fog`, dust and sand storm under `sand` in the pipeline.)*
+
 ## 📊 Results
 
 Trained on Google Colab (Tesla T4), COCO-pretrained weights, `imgsz=480`, early stopping
@@ -97,9 +108,24 @@ Final YOLO12s test results (after NMS tuning: `conf=0.25`, `iou=0.5`):
 
 Validation overall with the same thresholds: mAP50 **0.717**, mAP50-95 **0.656**.
 
+### Before / after NMS tuning
+
+Duplicate and low-confidence boxes cleaned up by tuning to `conf=0.25`, `iou=0.5`
+(each strip: original · ground truth · prediction):
+
+| Condition | Before | After |
+|---|---|---|
+| ☀️ Clear | ![Clear before](assets/nms/clear-before.jpg) | ![Clear after](assets/nms/clear-after.jpg) |
+| 🌫️ Fog | ![Fog before](assets/nms/fog-before.jpg) | ![Fog after](assets/nms/fog-after.jpg) |
+| 🌙 Night | ![Night before](assets/nms/night-before.jpg) | ![Night after](assets/nms/night-after.jpg) |
+| 🌧️ Rain | ![Rain before](assets/nms/rain-before.jpg) | ![Rain after](assets/nms/rain-after.jpg) |
+
 ## 📁 Project Structure
 
 ```
+├── assets/
+│   ├── samples/             # weather sample images (README)
+│   └── nms/                 # before/after NMS comparisons (README)
 ├── best.pt                  # trained YOLO12s weights (imgsz 480)
 ├── config.py                # shared paths, class map, weather list
 ├── requirements.txt
