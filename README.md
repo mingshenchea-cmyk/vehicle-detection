@@ -1,57 +1,87 @@
-# Vehicle Detection in Adverse Weather Conditions
+<div align="center">
 
-YOLO12-based vehicle detection built to stay reliable in **clear, foggy, night and rainy**
-conditions. The repo contains the complete data pipeline (merge → balance → split →
-augment), training and evaluation scripts, a trained **YOLO12s** model (`best.pt`),
-ONNX export, and a real-time **dashcam desktop app** with vehicle counting and recording.
+# 🚗 Vehicle Detection in Adverse Weather Conditions
 
-## Features
+**YOLO12-powered vehicle detection that stays reliable in clear, foggy, night and rainy conditions.**
 
-- **6 vehicle classes**: Bicycle, Bus, Car, Motorcycle, Train, Truck (persons and other non-vehicle classes removed).
-- **BARD dataset pipeline**: merges BDD100K + ACDC + RTTS + DAWN into one YOLO-format dataset organized by weather.
-- **Class-balanced sampling & splitting**: 400 instances per class per weather, instance-balanced 70/20/10 train/val/test split.
-- **Targeted augmentation**: minority classes (train, motorcycle) filled with cropped + augmented instances.
-- **Reproducible training/evaluation**: YOLO12 n/s/m/x comparison, overall and per-weather metrics, post-NMS tuning.
-- **Deployment**: ONNX export and a Tkinter dashcam app (live count, measured FPS, manual recording).
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=flat-square&logo=pytorch&logoColor=white)](https://pytorch.org/)
+[![Ultralytics](https://img.shields.io/badge/YOLO12-Ultralytics-0B1F3F?style=flat-square&logo=ultralytics&logoColor=white)](https://docs.ultralytics.com/)
+[![OpenCV](https://img.shields.io/badge/OpenCV-5C3EE8?style=flat-square&logo=opencv&logoColor=white)](https://opencv.org/)
+[![NumPy](https://img.shields.io/badge/NumPy-013243?style=flat-square&logo=numpy&logoColor=white)](https://numpy.org/)
 
-## Dataset — BARD
+[![License: MIT](https://img.shields.io/badge/Code_License-MIT-green?style=flat-square)](LICENSE)
+[![Dataset: CC-BY-4.0](https://img.shields.io/badge/Dataset-CC--BY--4.0-lightgrey?style=flat-square)](https://creativecommons.org/licenses/by/4.0/)
+[![Kaggle](https://img.shields.io/badge/Kaggle-BARD_Dataset-20BEFF?style=flat-square&logo=kaggle&logoColor=white)](https://www.kaggle.com/datasets/mingshen0118/bard-vehicle-detection)
+[![GUI](https://img.shields.io/badge/GUI-Tkinter-FF6F00?style=flat-square&logo=python&logoColor=white)](#-dashcam-app)
+
+[Dataset](#-dataset--bard) · [Results](#-results) · [Quick Start](#-getting-started) · [Pipeline](#-pipeline-run-in-order) · [Dashcam](#-dashcam-app) · [License](#-license)
+
+</div>
+
+---
+
+A complete, reproducible project: merge four driving datasets into one weather-organized
+YOLO dataset, balance and split it, train and benchmark YOLO12 variants, then deploy the
+best model as an ONNX export or a real-time dashcam desktop app.
+
+## ✨ Features
+
+- 🎯 **6 vehicle classes** — Bicycle, Bus, Car, Motorcycle, Train, Truck (persons and other non-vehicle classes removed)
+- 🌦️ **Weather-organized BARD dataset** — BDD100K + ACDC + RTTS + DAWN merged into one YOLO-format dataset
+- ⚖️ **Class-balanced sampling & splitting** — 400 instances per class per weather, instance-balanced 70/20/10 train/val/test split
+- 🧪 **Targeted augmentation** — minority classes (train, motorcycle) filled with cropped + augmented instances
+- 📊 **Reproducible benchmarks** — YOLO12 n/s/m/x comparison, overall and per-weather metrics, post-NMS tuning
+- 🚀 **Deployment ready** — ONNX export + Tkinter dashcam app with live vehicle count, FPS and recording
+
+## 🛠️ Tech Stack
+
+| Purpose | Technology |
+|---|---|
+| Detection model | [Ultralytics YOLO12](https://docs.ultralytics.com/) (PyTorch) |
+| Image processing & augmentation | OpenCV, Pillow, NumPy |
+| Dataset configs & reports | PyYAML, tabulate |
+| Visualization | Matplotlib |
+| Desktop GUI | Tkinter |
+| Model export | ONNX / ONNX Runtime |
+
+## 📦 Dataset — BARD
 
 BARD combines four driving datasets into one adverse-weather vehicle detection dataset
-(~12 GB, YOLO format, CC-BY-4.0):
+(**~12 GB**, YOLO format, CC-BY-4.0):
 
 | Source | Contribution |
 |---|---|
-| BDD100K (Berkeley DeepDrive) | Large-scale clear / night / rain driving scenes |
-| ACDC (Adverse Conditions Dataset with Correspondences) | Fog / night / rain / snow, plus clear reference images |
-| RTTS (Real-world Task-driven Testing Set) | Real hazy (fog) scenes |
-| DAWN (Detection in Adverse Weather Nature) | Fog / rain / snow / sand-storm scenes |
+| **BDD100K** (Berkeley DeepDrive) | Large-scale clear / night / rain driving scenes |
+| **ACDC** (Adverse Conditions Dataset with Correspondences) | Fog / night / rain / snow, plus clear reference images |
+| **RTTS** (Real-world Task-driven Testing Set) | Real hazy (fog) scenes |
+| **DAWN** (Detection in Adverse Weather Nature) | Fog / rain / snow / sand-storm scenes |
 
-**Download:** [github.com/mingshenchea-cmyk/BARD-Vehicle-Detection](https://github.com/mingshenchea-cmyk/BARD-Vehicle-Detection) ·
-[Kaggle](https://www.kaggle.com/datasets/mingshen0118/bard-vehicle-detection)
+> 📥 **Download:** [GitHub](https://github.com/mingshenchea-cmyk/BARD-Vehicle-Detection) · [Kaggle](https://www.kaggle.com/datasets/mingshen0118/bard-vehicle-detection)
 
 Classes (YOLO label ids):
 
 | Id | Class | Id | Class |
 |---|---|---|---|
-| 0 | Bicycle | 3 | Motorcycle |
-| 1 | Bus | 4 | Train |
-| 2 | Car | 5 | Truck |
+| 0 | 🚲 Bicycle | 3 | 🏍️ Motorcycle |
+| 1 | 🚌 Bus | 4 | 🚆 Train |
+| 2 | 🚗 Car | 5 | 🚚 Truck |
 
 Images are grouped by weather: `clear`, `fog`, `night`, `rain`, `sand`, `snow`.
 The balanced training split uses **clear / fog / night / rain**; sand and snow remain
 in the merged dataset but are not sampled into the split.
 
-## Results
+## 📊 Results
 
 Trained on Google Colab (Tesla T4), COCO-pretrained weights, `imgsz=480`, early stopping
-(`patience=5`). YOLO12s performed best and is released as `best.pt`.
+(`patience=5`). **YOLO12s performed best** and is released as `best.pt`.
 
 Model comparison (validation set, default thresholds):
 
 | Model | mAP50 | mAP50-95 |
 |---|---|---|
 | YOLO12n | 0.624 | 0.544 |
-| **YOLO12s** | **0.689** | **0.604** |
+| **YOLO12s** ⭐ | **0.689** | **0.604** |
 | YOLO12m | 0.647 | 0.554 |
 | YOLO12x | 0.581 | 0.495 |
 
@@ -59,15 +89,15 @@ Final YOLO12s test results (after NMS tuning: `conf=0.25`, `iou=0.5`):
 
 | Condition | Images | Precision | Recall | mAP50 | mAP50-95 |
 |---|---|---|---|---|---|
-| Overall | 658 | 0.635 | 0.603 | 0.634 | 0.576 |
-| Clear | 150 | 0.680 | 0.577 | 0.652 | 0.593 |
-| Fog | 143 | 0.689 | 0.667 | 0.703 | 0.594 |
-| Night | 172 | 0.668 | 0.581 | 0.637 | 0.597 |
-| Rain | 193 | 0.627 | 0.549 | 0.610 | 0.567 |
+| 🌍 Overall | 658 | 0.635 | 0.603 | **0.634** | **0.576** |
+| ☀️ Clear | 150 | 0.680 | 0.577 | 0.652 | 0.593 |
+| 🌫️ Fog | 143 | 0.689 | 0.667 | 0.703 | 0.594 |
+| 🌙 Night | 172 | 0.668 | 0.581 | 0.637 | 0.597 |
+| 🌧️ Rain | 193 | 0.627 | 0.549 | 0.610 | 0.567 |
 
-(Validation overall with the same thresholds: mAP50 **0.717**, mAP50-95 **0.656**.)
+Validation overall with the same thresholds: mAP50 **0.717**, mAP50-95 **0.656**.
 
-## Project structure
+## 📁 Project Structure
 
 ```
 ├── best.pt                  # trained YOLO12s weights (imgsz 480)
@@ -93,7 +123,7 @@ Final YOLO12s test results (after NMS tuning: `conf=0.25`, `iou=0.5`):
     └── test_pipeline.py     # synthetic end-to-end pipeline self-check
 ```
 
-## Getting started
+## 🚀 Getting Started
 
 Requirements: **Python 3.10+** (a GPU is recommended for training, not needed for inference).
 
@@ -132,7 +162,7 @@ data/
 └── RTTS/{Annotations,JPEGImages}
 ```
 
-## Pipeline (run in order)
+## 🔁 Pipeline (run in order)
 
 | Step | Command | Purpose |
 |---|---|---|
@@ -154,36 +184,37 @@ data/
 | 12 | `python scripts/12_export.py` | export ONNX |
 
 **Which steps can you skip?**
-- Option A (combined BARD dataset): skip **1–4**, start at step 5.
-- Option B (raw datasets): run everything in order.
-- Already have `BARD/split` + the YAML configs (e.g. from a previous run):
-  skip **1–8**, start at step 9.
-- Just want to use the trained model (`best.pt`): no dataset needed — run
-  `app/dashcam.py`, `11_visualize.py` or `12_export.py` directly.
 
-Notes:
-- For 640/320 input-size variants, copy `BARD/split` and run
-  `08_finalize.py --dir <copy> --size 640`, then train with `09_train.py --imgsz 640`.
-- Quick video inference without any script:
-  `yolo predict model=best.pt source=video.mp4 conf=0.25 iou=0.5 save=True`
-- Verify the pipeline anytime with `python tests/test_pipeline.py`
-  (runs on tiny synthetic data in a temp folder, never touches your data).
+| You have… | Skip | Start at |
+|---|---|---|
+| Combined BARD dataset (Option A) | steps 1–4 | step 5 |
+| The 4 raw datasets (Option B) | nothing | step 1 |
+| `BARD/split` + YAML configs already built | steps 1–8 | step 9 |
+| Just want to use `best.pt` | everything | dashcam / visualize / export |
 
-## Dashcam app
+> 💡 **Tips**
+> - For 640/320 input-size variants, copy `BARD/split` and run
+>   `08_finalize.py --dir <copy> --size 640`, then train with `09_train.py --imgsz 640`.
+> - Quick video inference without any script:
+>   `yolo predict model=best.pt source=video.mp4 conf=0.25 iou=0.5 save=True`
+> - Verify the pipeline anytime with `python tests/test_pipeline.py`
+>   (runs on tiny synthetic data in a temp folder, never touches your data).
+
+## 🎥 Dashcam App
 
 ```bash
 python app/dashcam.py                      # webcam
 python app/dashcam.py --source video/rain1.mp4
 ```
 
-A Tkinter desktop app using `best.pt`:
+A Tkinter desktop app powered by `best.pt`:
 
-- Live bounding boxes with class + confidence, and a running **vehicle count**
-- **Measured FPS** display
-- **Record** button — saves annotated `.avi` clips to `recordings/`
-- Video files loop automatically; falls back to raw frames if detection fails
+- 📦 Live bounding boxes with class + confidence, and a running **vehicle count**
+- ⚡ **Measured FPS** display
+- 🔴 **Record** button — saves annotated `.avi` clips to `recordings/`
+- 🔁 Video files loop automatically; falls back to raw frames if detection fails
 
-## Citation
+## 📜 Citation
 
 If you use the BARD dataset, please cite:
 
@@ -197,9 +228,17 @@ If you use the BARD dataset, please cite:
 }
 ```
 
-## License
+## ⚖️ License
 
 - **Code** (this repository): [MIT](LICENSE)
 - **BARD dataset**: [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/)
 - The underlying source datasets (BDD100K, ACDC, RTTS, DAWN) remain under their
   original licenses and terms of use.
+
+---
+
+<div align="center">
+
+⭐ If you find this project useful, consider giving it a star!
+
+</div>
