@@ -1,0 +1,11 @@
+ultralytics
+opencv-python
+numpy
+pillow
+pyyaml
+tabulate
+matplotlib
+# For ONNX export (12_export.py); ultralytics can also auto-install these:
+onnx
+onnxslim
+onnxruntime
