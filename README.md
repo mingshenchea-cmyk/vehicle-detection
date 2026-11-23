@@ -1,10 +1,101 @@
-# Vehicle Detection (YOLO12)
+# Vehicle Detection in Adverse Weather Conditions
 
-Vehicle detection in adverse weather (clear / fog / night / rain), converted from
-`vehicle_detection.ipynb` (kept for reference). `best.pt` is the trained YOLO12s
-model (imgsz 480, 6 classes: Bicycle, Bus, Car, Motorcycle, Train, Truck).
+YOLO12-based vehicle detection built to stay reliable in **clear, foggy, night and rainy**
+conditions. The repo contains the complete data pipeline (merge → balance → split →
+augment), training and evaluation scripts, a trained **YOLO12s** model (`best.pt`),
+ONNX export, and a real-time **dashcam desktop app** with vehicle counting and recording.
 
-## Setup
+## Features
+
+- **6 vehicle classes**: Bicycle, Bus, Car, Motorcycle, Train, Truck (persons and other non-vehicle classes removed).
+- **BARD dataset pipeline**: merges BDD100K + ACDC + RTTS + DAWN into one YOLO-format dataset organized by weather.
+- **Class-balanced sampling & splitting**: 400 instances per class per weather, instance-balanced 70/20/10 train/val/test split.
+- **Targeted augmentation**: minority classes (train, motorcycle) filled with cropped + augmented instances.
+- **Reproducible training/evaluation**: YOLO12 n/s/m/x comparison, overall and per-weather metrics, post-NMS tuning.
+- **Deployment**: ONNX export and a Tkinter dashcam app (live count, measured FPS, manual recording).
+
+## Dataset — BARD
+
+BARD combines four driving datasets into one adverse-weather vehicle detection dataset
+(~12 GB, YOLO format, CC-BY-4.0):
+
+| Source | Contribution |
+|---|---|
+| BDD100K (Berkeley DeepDrive) | Large-scale clear / night / rain driving scenes |
+| ACDC (Adverse Conditions Dataset with Correspondences) | Fog / night / rain / snow, plus clear reference images |
+| RTTS (Real-world Task-driven Testing Set) | Real hazy (fog) scenes |
+| DAWN (Detection in Adverse Weather Nature) | Fog / rain / snow / sand-storm scenes |
+
+**Download:** [github.com/mingshenchea-cmyk/BARD-Vehicle-Detection](https://github.com/mingshenchea-cmyk/BARD-Vehicle-Detection) ·
+[Kaggle](https://www.kaggle.com/datasets/mingshen0118/bard-vehicle-detection)
+
+Classes (YOLO label ids):
+
+| Id | Class | Id | Class |
+|---|---|---|---|
+| 0 | Bicycle | 3 | Motorcycle |
+| 1 | Bus | 4 | Train |
+| 2 | Car | 5 | Truck |
+
+Images are grouped by weather: `clear`, `fog`, `night`, `rain`, `sand`, `snow`.
+The balanced training split uses **clear / fog / night / rain**; sand and snow remain
+in the merged dataset but are not sampled into the split.
+
+## Results
+
+Trained on Google Colab (Tesla T4), COCO-pretrained weights, `imgsz=480`, early stopping
+(`patience=5`). YOLO12s performed best and is released as `best.pt`.
+
+Model comparison (validation set, default thresholds):
+
+| Model | mAP50 | mAP50-95 |
+|---|---|---|
+| YOLO12n | 0.624 | 0.544 |
+| **YOLO12s** | **0.689** | **0.604** |
+| YOLO12m | 0.647 | 0.554 |
+| YOLO12x | 0.581 | 0.495 |
+
+Final YOLO12s test results (after NMS tuning: `conf=0.25`, `iou=0.5`):
+
+| Condition | Images | Precision | Recall | mAP50 | mAP50-95 |
+|---|---|---|---|---|---|
+| Overall | 658 | 0.635 | 0.603 | 0.634 | 0.576 |
+| Clear | 150 | 0.680 | 0.577 | 0.652 | 0.593 |
+| Fog | 143 | 0.689 | 0.667 | 0.703 | 0.594 |
+| Night | 172 | 0.668 | 0.581 | 0.637 | 0.597 |
+| Rain | 193 | 0.627 | 0.549 | 0.610 | 0.567 |
+
+(Validation overall with the same thresholds: mAP50 **0.717**, mAP50-95 **0.656**.)
+
+## Project structure
+
+```
+├── best.pt                  # trained YOLO12s weights (imgsz 480)
+├── config.py                # shared paths, class map, weather list
+├── requirements.txt
+├── scripts/
+│   ├── 01_prepare_dawn.py   # DAWN → BARD
+│   ├── 02_prepare_acdc.py   # ACDC COCO json → YOLO
+│   ├── 03_prepare_bdd100k.py# BDD100K json → YOLO
+│   ├── 04_prepare_rtts.py   # RTTS VOC xml → YOLO
+│   ├── 05_sample.py         # class-balanced sampling per weather
+│   ├── 06_split.py          # instance-balanced 70/20/10 split
+│   ├── 07_augment.py        # fill minority classes with crops
+│   ├── 08_finalize.py       # merge split, resize, write YAML configs
+│   ├── 09_train.py          # train YOLO12 n/s/m/x
+│   ├── 10_evaluate.py       # val/test, overall + per weather
+│   ├── 11_visualize.py      # GT vs prediction panels, metric curves
+│   ├── 12_export.py         # ONNX export
+│   └── analyze.py           # class-distribution tables
+├── app/
+│   └── dashcam.py           # real-time dashcam GUI
+└── tests/
+    └── test_pipeline.py     # synthetic end-to-end pipeline self-check
+```
+
+## Getting started
+
+Requirements: **Python 3.10+** (a GPU is recommended for training, not needed for inference).
 
 ```bash
 pip install -r requirements.txt
@@ -15,12 +106,8 @@ Choose your starting point:
 
 ### Option A — combined BARD dataset (skip steps 1–4)
 
-Download the ready-combined dataset (~12 GB, all 4 sources already merged and
-converted to YOLO format) from
-[github.com/mingshenchea-cmyk/BARD-Vehicle-Detection](https://github.com/mingshenchea-cmyk/BARD-Vehicle-Detection)
-([Kaggle download](https://www.kaggle.com/datasets/mingshen0118/bard-vehicle-detection)).
-
-Extract it so the merged folders sit at `data/BARD/`:
+Download the ready-combined dataset from the links above and extract it so the merged
+folders sit at `data/BARD/`:
 
 ```
 data/BARD/
@@ -75,12 +162,12 @@ data/
   `app/dashcam.py`, `11_visualize.py` or `12_export.py` directly.
 
 Notes:
-- The notebook's zip → Google Drive → unzip → Colab steps were manual workflow
-  and are not part of this pipeline. To train on Colab, upload `data/BARD` yourself.
-- For 640/320 variants (notebook's BARD2/BARD3), copy `BARD/split` and run
-  `08_finalize.py --dir <copy> --size 640`.
-- Video demo (notebook 5.4) is a one-liner:
+- For 640/320 input-size variants, copy `BARD/split` and run
+  `08_finalize.py --dir <copy> --size 640`, then train with `09_train.py --imgsz 640`.
+- Quick video inference without any script:
   `yolo predict model=best.pt source=video.mp4 conf=0.25 iou=0.5 save=True`
+- Verify the pipeline anytime with `python tests/test_pipeline.py`
+  (runs on tiny synthetic data in a temp folder, never touches your data).
 
 ## Dashcam app
 
@@ -89,5 +176,30 @@ python app/dashcam.py                      # webcam
 python app/dashcam.py --source video/rain1.mp4
 ```
 
-Live detection with vehicle count, measured FPS and a Record button
-(saves annotated `.avi` files to `recordings/`).
+A Tkinter desktop app using `best.pt`:
+
+- Live bounding boxes with class + confidence, and a running **vehicle count**
+- **Measured FPS** display
+- **Record** button — saves annotated `.avi` clips to `recordings/`
+- Video files loop automatically; falls back to raw frames if detection fails
+
+## Citation
+
+If you use the BARD dataset, please cite:
+
+```bibtex
+@misc{Chea_BARD_2025,
+  author = {Chea, Ming Shen},
+  month  = dec,
+  title  = {{BARD}},
+  url    = {https://www.kaggle.com/datasets/mingshen0118/bard-vehicle-detection},
+  year   = {2025}
+}
+```
+
+## License
+
+- **Code** (this repository): [MIT](LICENSE)
+- **BARD dataset**: [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/)
+- The underlying source datasets (BDD100K, ACDC, RTTS, DAWN) remain under their
+  original licenses and terms of use.
