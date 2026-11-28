@@ -260,5 +260,3 @@ If you use the BARD dataset, please cite:
 - **BARD dataset**: [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/)
 - The underlying source datasets (BDD100K, ACDC, RTTS, DAWN) remain under their
   original licenses and terms of use.
-
----
