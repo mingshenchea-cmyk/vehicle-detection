@@ -82,7 +82,7 @@ Sample scenes from the dataset:
 
 *(Haze and mist are grouped under `fog`, dust and sand storm under `sand` in the pipeline.)*
 
-## 📊 Results
+## Results
 
 Trained on Google Colab (Tesla T4), COCO-pretrained weights, `imgsz=480`, early stopping
 (`patience=5`). **YOLO12s performed best** and is released as `best.pt`.
@@ -226,7 +226,7 @@ data/
 > - Verify the pipeline anytime with `python tests/test_pipeline.py`
 >   (runs on tiny synthetic data in a temp folder, never touches your data).
 
-## 🎥 Dashcam App
+## Dashcam App
 
 ```bash
 python app/dashcam.py                      # webcam
@@ -262,9 +262,3 @@ If you use the BARD dataset, please cite:
   original licenses and terms of use.
 
 ---
-
-<div align="center">
-
-⭐ If you find this project useful, consider giving it a star!
-
-</div>
