@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🚗 Vehicle Detection in Adverse Weather Conditions
+# Vehicle Detection in Adverse Weather Conditions
 
 **YOLO12-powered vehicle detection that stays reliable in clear, foggy, night and rainy conditions.**
 
@@ -25,16 +25,16 @@ A complete, reproducible project: merge four driving datasets into one weather-o
 YOLO dataset, balance and split it, train and benchmark YOLO12 variants, then deploy the
 best model as an ONNX export or a real-time dashcam desktop app.
 
-## ✨ Features
+## Features
 
-- 🎯 **6 vehicle classes** — Bicycle, Bus, Car, Motorcycle, Train, Truck (persons and other non-vehicle classes removed)
-- 🌦️ **Weather-organized BARD dataset** — BDD100K + ACDC + RTTS + DAWN merged into one YOLO-format dataset
-- ⚖️ **Class-balanced sampling & splitting** — 400 instances per class per weather, instance-balanced 70/20/10 train/val/test split
-- 🧪 **Targeted augmentation** — minority classes (train, motorcycle) filled with cropped + augmented instances
-- 📊 **Reproducible benchmarks** — YOLO12 n/s/m/x comparison, overall and per-weather metrics, post-NMS tuning
-- 🚀 **Deployment ready** — ONNX export + Tkinter dashcam app with live vehicle count, FPS and recording
+- **6 vehicle classes** — Bicycle, Bus, Car, Motorcycle, Train, Truck (persons and other non-vehicle classes removed)
+- **Weather-organized BARD dataset** — BDD100K + ACDC + RTTS + DAWN merged into one YOLO-format dataset
+- **Class-balanced sampling & splitting** — 400 instances per class per weather, instance-balanced 70/20/10 train/val/test split
+- **Targeted augmentation** — minority classes (train, motorcycle) filled with cropped + augmented instances
+- **Reproducible benchmarks** — YOLO12 n/s/m/x comparison, overall and per-weather metrics, post-NMS tuning
+- **Deployment ready** — ONNX export + Tkinter dashcam app with live vehicle count, FPS and recording
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Purpose | Technology |
 |---|---|
@@ -45,7 +45,7 @@ best model as an ONNX export or a real-time dashcam desktop app.
 | Desktop GUI | Tkinter |
 | Model export | ONNX / ONNX Runtime |
 
-## 📦 Dataset — BARD
+## Dataset — BARD
 
 BARD combines four driving datasets into one adverse-weather vehicle detection dataset
 (**~12 GB**, YOLO format, CC-BY-4.0):
@@ -57,15 +57,15 @@ BARD combines four driving datasets into one adverse-weather vehicle detection d
 | **RTTS** (Real-world Task-driven Testing Set) | Real hazy (fog) scenes |
 | **DAWN** (Detection in Adverse Weather Nature) | Fog / rain / snow / sand-storm scenes |
 
-> 📥 **Download:** [GitHub](https://github.com/mingshenchea-cmyk/BARD-Vehicle-Detection) · [Kaggle](https://www.kaggle.com/datasets/mingshen0118/bard-vehicle-detection)
+> **Download:** [GitHub](https://github.com/mingshenchea-cmyk/BARD-Vehicle-Detection) · [Kaggle](https://www.kaggle.com/datasets/mingshen0118/bard-vehicle-detection)
 
 Classes (YOLO label ids):
 
 | Id | Class | Id | Class |
 |---|---|---|---|
-| 0 | 🚲 Bicycle | 3 | 🏍️ Motorcycle |
-| 1 | 🚌 Bus | 4 | 🚆 Train |
-| 2 | 🚗 Car | 5 | 🚚 Truck |
+| 0 | Bicycle | 3 | Motorcycle |
+| 1 | Bus | 4 | Train |
+| 2 | Car | 5 | Truck |
 
 Images are grouped by weather: `clear`, `fog`, `night`, `rain`, `sand`, `snow`.
 The balanced training split uses **clear / fog / night / rain**; sand and snow remain
@@ -92,7 +92,7 @@ Model comparison (validation set, default thresholds):
 | Model | mAP50 | mAP50-95 |
 |---|---|---|
 | YOLO12n | 0.624 | 0.544 |
-| **YOLO12s** ⭐ | **0.689** | **0.604** |
+| **YOLO12s** | **0.689** | **0.604** |
 | YOLO12m | 0.647 | 0.554 |
 | YOLO12x | 0.581 | 0.495 |
 
@@ -100,11 +100,11 @@ Final YOLO12s test results (after NMS tuning: `conf=0.25`, `iou=0.5`):
 
 | Condition | Images | Precision | Recall | mAP50 | mAP50-95 |
 |---|---|---|---|---|---|
-| 🌍 Overall | 658 | 0.635 | 0.603 | **0.634** | **0.576** |
-| ☀️ Clear | 150 | 0.680 | 0.577 | 0.652 | 0.593 |
-| 🌫️ Fog | 143 | 0.689 | 0.667 | 0.703 | 0.594 |
-| 🌙 Night | 172 | 0.668 | 0.581 | 0.637 | 0.597 |
-| 🌧️ Rain | 193 | 0.627 | 0.549 | 0.610 | 0.567 |
+| Overall | 658 | 0.635 | 0.603 | **0.634** | **0.576** |
+| Clear | 150 | 0.680 | 0.577 | 0.652 | 0.593 |
+| Fog | 143 | 0.689 | 0.667 | 0.703 | 0.594 |
+| Night | 172 | 0.668 | 0.581 | 0.637 | 0.597 |
+| Rain | 193 | 0.627 | 0.549 | 0.610 | 0.567 |
 
 Validation overall with the same thresholds: mAP50 **0.717**, mAP50-95 **0.656**.
 
@@ -115,12 +115,12 @@ Duplicate and low-confidence boxes cleaned up by tuning to `conf=0.25`, `iou=0.5
 
 | Condition | Before | After |
 |---|---|---|
-| ☀️ Clear | [![Clear before](assets/nms/clear-before-pred.jpg)](assets/nms/clear-before.jpg) | [![Clear after](assets/nms/clear-after-pred.jpg)](assets/nms/clear-after.jpg) |
-| 🌫️ Fog | [![Fog before](assets/nms/fog-before-pred.jpg)](assets/nms/fog-before.jpg) | [![Fog after](assets/nms/fog-after-pred.jpg)](assets/nms/fog-after.jpg) |
-| 🌙 Night | [![Night before](assets/nms/night-before-pred.jpg)](assets/nms/night-before.jpg) | [![Night after](assets/nms/night-after-pred.jpg)](assets/nms/night-after.jpg) |
-| 🌧️ Rain | [![Rain before](assets/nms/rain-before-pred.jpg)](assets/nms/rain-before.jpg) | [![Rain after](assets/nms/rain-after-pred.jpg)](assets/nms/rain-after.jpg) |
+| Clear | [![Clear before](assets/nms/clear-before-pred.jpg)](assets/nms/clear-before.jpg) | [![Clear after](assets/nms/clear-after-pred.jpg)](assets/nms/clear-after.jpg) |
+| Fog | [![Fog before](assets/nms/fog-before-pred.jpg)](assets/nms/fog-before.jpg) | [![Fog after](assets/nms/fog-after-pred.jpg)](assets/nms/fog-after.jpg) |
+| Night | [![Night before](assets/nms/night-before-pred.jpg)](assets/nms/night-before.jpg) | [![Night after](assets/nms/night-after-pred.jpg)](assets/nms/night-after.jpg) |
+| Rain | [![Rain before](assets/nms/rain-before-pred.jpg)](assets/nms/rain-before.jpg) | [![Rain after](assets/nms/rain-after-pred.jpg)](assets/nms/rain-after.jpg) |
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 ├── assets/
@@ -149,7 +149,7 @@ Duplicate and low-confidence boxes cleaned up by tuning to `conf=0.25`, `iou=0.5
     └── test_pipeline.py     # synthetic end-to-end pipeline self-check
 ```
 
-## 🚀 Getting Started
+## Getting Started
 
 Requirements: **Python 3.10+** (a GPU is recommended for training, not needed for inference).
 
@@ -188,7 +188,7 @@ data/
 └── RTTS/{Annotations,JPEGImages}
 ```
 
-## 🔁 Pipeline (run in order)
+## Pipeline (run in order)
 
 | Step | Command | Purpose |
 |---|---|---|
@@ -218,7 +218,7 @@ data/
 | `BARD/split` + YAML configs already built | steps 1–8 | step 9 |
 | Just want to use `best.pt` | everything | dashcam / visualize / export |
 
-> 💡 **Tips**
+> **Tips**
 > - For 640/320 input-size variants, copy `BARD/split` and run
 >   `08_finalize.py --dir <copy> --size 640`, then train with `09_train.py --imgsz 640`.
 > - Quick video inference without any script:
@@ -235,12 +235,12 @@ python app/dashcam.py --source video/rain1.mp4
 
 A Tkinter desktop app powered by `best.pt`:
 
-- 📦 Live bounding boxes with class + confidence, and a running **vehicle count**
-- ⚡ **Measured FPS** display
-- 🔴 **Record** button — saves annotated `.avi` clips to `recordings/`
-- 🔁 Video files loop automatically; falls back to raw frames if detection fails
+- Live bounding boxes with class + confidence, and a running **vehicle count**
+- **Measured FPS** display
+- **Record** button — saves annotated `.avi` clips to `recordings/`
+- Video files loop automatically; falls back to raw frames if detection fails
 
-## 📜 Citation
+## Citation
 
 If you use the BARD dataset, please cite:
 
@@ -254,7 +254,7 @@ If you use the BARD dataset, please cite:
 }
 ```
 
-## ⚖️ License
+## License
 
 - **Code** (this repository): [MIT](LICENSE)
 - **BARD dataset**: [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/)
